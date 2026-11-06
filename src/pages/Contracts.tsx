@@ -6,6 +6,7 @@ import type { Contract } from '../db/types'
 import { toJalali } from '../utils/date'
 import { Badge, Confirm, Empty, Field, Modal, PageHead, toast } from '../components/ui'
 import { IconPlus, IconTrash } from '../components/Icons'
+import { DateInput } from '../components/DateInput'
 
 export function ContractList() {
   const [editing, setEditing] = useState<Contract | null | 'new'>(null)
@@ -15,7 +16,7 @@ export function ContractList() {
   const domains = useLiveQuery(() => db.domains.toArray(), [])
   const visitCounts = useLiveQuery(async () => {
     const out: Record<string, number> = {}
-    await db.visits.each((v) => { out[v.contractId] = (out[v.contractId] ?? 0) + 1 })
+    await db.inspections.each((v) => { out[v.contractId] = (out[v.contractId] ?? 0) + 1 })
     return out
   }, [])
   const domainName = (id: string) => domains?.find((d) => d.id === id)?.name ?? '—'
@@ -23,9 +24,9 @@ export function ContractList() {
 
   async function remove() {
     if (!del) return
-    const n = await db.visits.where('contractId').equals(del.id).count()
+    const n = await db.inspections.where('contractId').equals(del.id).count()
     if (n > 0) {
-      toast(`این پیمان ${n} بازدید دارد؛ به‌جای حذف، آن را غیرفعال کنید`)
+      toast(`این پیمان ${n} بازرسی دارد؛ به‌جای حذف، آن را غیرفعال کنید`)
       setDel(null)
       return
     }
@@ -38,7 +39,7 @@ export function ContractList() {
     <div>
       <PageHead
         title="پیمان‌ها"
-        sub="پیمان‌هایی که بازدید HSE آن‌ها بر عهده شماست"
+        sub="پیمان‌هایی که بازرسی HSE آن‌ها بر عهده شماست"
         actions={
           <>
             <Link to="/catalog" className="btn sm">کاتالوگ عدم انطباق</Link>
@@ -69,11 +70,11 @@ export function ContractList() {
               {c.employer && <span>کارفرما: {c.employer}</span>}
               {c.area && <span>{c.area}</span>}
               {c.endDate && <span>تا {toJalali(c.endDate)}</span>}
-              <span>{visitCounts?.[c.id] ?? 0} بازدید</span>
+              <span>{visitCounts?.[c.id] ?? 0} بازرسی</span>
             </div>
             <div className="row mt">
-              <Link to={`/visits?contract=${c.id}`} className="btn sm">بازدیدها</Link>
-              <Link to={`/visits/new?contract=${c.id}`} className="btn sm primary">بازدید جدید</Link>
+              <Link to={`/inspections?contract=${c.id}`} className="btn sm">بازرسی‌ها</Link>
+              <Link to={`/inspections/new?contract=${c.id}`} className="btn sm primary">بازرسی جدید</Link>
               <button className="btn sm" onClick={() => setEditing(c)}>ویرایش</button>
               <button className="btn sm danger" onClick={() => setDel(c)}><IconTrash /></button>
             </div>
@@ -148,8 +149,8 @@ export function ContractForm({ existing, onClose }: { existing?: Contract; onClo
               <option value="0">غیرفعال</option>
             </select>
           </Field>
-          <Field label="شروع"><input type="date" value={f.startDate} onChange={(e) => set('startDate', e.target.value)} /></Field>
-          <Field label="پایان"><input type="date" value={f.endDate} onChange={(e) => set('endDate', e.target.value)} /></Field>
+          <Field label="شروع"><DateInput value={f.startDate ?? ''} onChange={(d) => set('startDate', d)} /></Field>
+          <Field label="پایان"><DateInput value={f.endDate ?? ''} onChange={(d) => set('endDate', d)} /></Field>
         </div>
         <Field label="یادداشت"><textarea value={f.notes} onChange={(e) => set('notes', e.target.value)} style={{ minHeight: 60 }} /></Field>
         {err && <p className="error">{err}</p>}

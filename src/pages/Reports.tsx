@@ -6,6 +6,7 @@ import { CRITICALITY_LEVELS, criticalityTone } from '../db/types'
 import { addDays, toJalali, todayISO } from '../utils/date'
 import { downloadCSV } from '../utils/export'
 import { Badge, Field, PageHead } from '../components/ui'
+import { DateInput } from '../components/DateInput'
 
 const TONE_COLOR: Record<string, string> = { ok: 'var(--ok)', warn: 'var(--warn)', danger: 'var(--danger)', info: 'var(--info)' }
 
@@ -17,7 +18,7 @@ export function Reports() {
   const domains = useLiveQuery(() => db.domains.toArray(), [])
   const ncs = useLiveQuery(() => db.nonConformances.toArray(), [])
   const visits = useLiveQuery(async () => {
-    let rows = await db.visits.where('date').between(from, to, true, true).toArray()
+    let rows = await db.inspections.where('date').between(from, to, true, true).toArray()
     if (contractId) rows = rows.filter((v) => v.contractId === contractId)
     return rows.sort((a, b) => a.date.localeCompare(b.date))
   }, [contractId, from, to])
@@ -34,7 +35,7 @@ export function Reports() {
     for (const v of visits) {
       const bc = byContract.get(v.contractId) ?? { visits: 0, items: 0, weighted: 0 }
       bc.visits++
-      for (const it of v.items) {
+      for (const it of v.ncItems) {
         const n = ncMap.get(it.ncId)
         items++
         bc.items++
@@ -59,7 +60,7 @@ export function Reports() {
     const rows: (string | number | undefined)[][] = []
     for (const v of visits) {
       const c = contracts?.find((x) => x.id === v.contractId)
-      for (const it of v.items) {
+      for (const it of v.ncItems) {
         const n = ncMap.get(it.ncId)
         rows.push([toJalali(v.date), c?.name, c?.contractor, v.locationText, n?.code, n?.title, n?.questionType, n?.process, n?.criticality, n?.score, n?.deadline, it.note, v.status === 'resolved' ? 'رفع شده' : 'باز'])
       }
@@ -71,8 +72,8 @@ export function Reports() {
   return (
     <div className="print-area">
       <PageHead
-        title="گزارش بازدیدها"
-        back="/visits"
+        title="گزارش بازرسی‌ها"
+        back="/inspections"
         actions={
           <span className="no-print row">
             <button className="btn sm" onClick={exportCsv} disabled={!visits?.length}>خروجی CSV</button>
@@ -88,17 +89,17 @@ export function Reports() {
               {contracts?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </Field>
-          <Field label="از تاریخ"><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
-          <Field label="تا تاریخ"><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></Field>
+          <Field label="از تاریخ"><DateInput value={from} onChange={setFrom} /></Field>
+          <Field label="تا تاریخ"><DateInput value={to} onChange={setTo} /></Field>
         </div>
       </div>
       <p className="text-sm text-muted mt">بازه {toJalali(from)} تا {toJalali(to)}{contractId ? ` · ${contracts?.find((c) => c.id === contractId)?.name}` : ''}</p>
 
       <div className="stats mt">
-        <div className="stat"><div className="label">تعداد بازدید</div><div className="value">{visits?.length ?? 0}</div></div>
+        <div className="stat"><div className="label">تعداد بازرسی</div><div className="value">{visits?.length ?? 0}</div></div>
         <div className="stat warn"><div className="label">عدم انطباق ثبت‌شده</div><div className="value">{stats?.items ?? 0}</div></div>
         <div className="stat danger"><div className="label">مجموع امتیاز منفی</div><div className="value">{stats?.weighted ?? 0}</div></div>
-        <div className="stat ok"><div className="label">بازدید رفع‌شده</div><div className="value">{stats?.resolved ?? 0} / {visits?.length ?? 0}</div></div>
+        <div className="stat ok"><div className="label">بازرسی رفع‌شده</div><div className="value">{stats?.resolved ?? 0} / {visits?.length ?? 0}</div></div>
       </div>
 
       <div className="grid-2">
@@ -158,7 +159,7 @@ export function Reports() {
                     <div className="title">{c?.name ?? '—'}</div>
                     <div className="meta">{c?.contractor && <span>{c.contractor}</span>}<span>{domains?.find((d) => d.id === c?.domainId)?.name}</span></div>
                   </div>
-                  <span className="text-sm">{s.visits} بازدید · {s.items} مورد · امتیاز {s.weighted}</span>
+                  <span className="text-sm">{s.visits} بازرسی · {s.items} مورد · امتیاز {s.weighted}</span>
                 </div>
               )
             })}
@@ -166,16 +167,16 @@ export function Reports() {
         </>
       )}
 
-      <div className="section-title"><h2>فهرست بازدیدها</h2></div>
+      <div className="section-title"><h2>فهرست بازرسی‌ها</h2></div>
       <div className="card">
-        {!visits?.length && <p className="text-muted text-sm">بازدیدی در این بازه نیست.</p>}
+        {!visits?.length && <p className="text-muted text-sm">بازرسی‌ای در این بازه نیست.</p>}
         {visits?.map((v) => {
           const c = contracts?.find((x) => x.id === v.contractId)
           return (
-            <Link key={v.id} to={`/visits/${v.id}`} className="list-item" style={{ color: 'inherit' }}>
+            <Link key={v.id} to={`/inspections/${v.id}`} className="list-item" style={{ color: 'inherit' }}>
               <div className="body">
                 <div className="title">{toJalali(v.date)} — {c?.name}</div>
-                <div className="meta">{v.locationText && <span>{v.locationText}</span>}<span>{v.items.length} عدم انطباق</span></div>
+                <div className="meta">{v.locationText && <span>{v.locationText}</span>}<span>{v.ncItems.length} عدم انطباق</span></div>
               </div>
               <Badge tone={v.status === 'resolved' ? 'ok' : 'warn'}>{v.status === 'resolved' ? 'رفع شده' : 'باز'}</Badge>
             </Link>

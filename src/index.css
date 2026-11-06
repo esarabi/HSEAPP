@@ -49,6 +49,27 @@
   }
 }
 
+:root[data-theme='dark'] {
+    --bg: #0f1419;
+    --surface: #182028;
+    --surface-2: #212b35;
+    --text: #e6ebf0;
+    --text-muted: #9aa7b5;
+    --border: #2d3843;
+    --primary: #2dd4bf;
+    --primary-strong: #5eead4;
+    --primary-soft: #0f3b38;
+    --danger: #fb923c;
+    --danger-soft: #3f1f0f;
+    --warn: #fbbf24;
+    --warn-soft: #3d2a08;
+    --ok: #4ade80;
+    --ok-soft: #0f3320;
+    --info: #60a5fa;
+    --info-soft: #152a55;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -306,3 +327,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .card { box-shadow: none; break-inside: avoid; }
   a { color: inherit; }
 }
+
+/* ---------- تقویم شمسی ---------- */
+.date-input { display: flex; align-items: center; gap: 4px; }
+.date-input .input { flex: 1; text-align: right; }
+.date-btn { flex-shrink: 0; min-width: 40px; }
+.modal.cal { max-width: 360px; }
+.cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-weekdays { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+.cal-day {
+  aspect-ratio: 1; border: 1px solid transparent; border-radius: 8px; background: var(--surface-2);
+  cursor: pointer; font-size: 0.95rem; min-height: 38px;
+}
+.cal-day:hover { border-color: var(--primary); }
+.cal-day.today { border-color: var(--primary); font-weight: 700; }
+.cal-day.selected { background: var(--primary); color: #fff; }
+.cal-day.friday { color: var(--danger); }
+.cal-day.selected.friday { color: #fff; }
+.cal-day:disabled { opacity: 0.35; cursor: not-allowed; }
+.cal-years { display: flex; flex-wrap: wrap; gap: 6px; max-height: 260px; overflow: auto; }
+html, body { overscroll-behavior-y: none; }

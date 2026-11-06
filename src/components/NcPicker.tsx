@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo, useState } from 'react'
 import { db, newId } from '../db/db'
-import type { NonConformance, VisitItem } from '../db/types'
+import type { NonConformance, NcItem } from '../db/types'
 import { CRITICALITY_LEVELS, criticalityTone } from '../db/types'
 import { normalize } from '../utils/sheet'
 import { Badge, Field, Modal, toast } from './ui'
@@ -10,7 +10,7 @@ import { Badge, Field, Modal, toast } from './ui'
  * انتخاب موارد عدم انطباق از کاتالوگ یک حوزه با جستجو بر اساس شناسه یا عنوان،
  * انتخاب چندتایی و افزودن مورد جدید در لحظه.
  */
-export function NcPicker({ domainId, value, onChange }: { domainId?: string; value: VisitItem[]; onChange: (items: VisitItem[]) => void }) {
+export function NcPicker({ domainId, value, onChange }: { domainId?: string; value: NcItem[]; onChange: (items: NcItem[]) => void }) {
   const [q, setQ] = useState('')
   const [process, setProcess] = useState('')
   const [adding, setAdding] = useState(false)
@@ -40,7 +40,7 @@ export function NcPicker({ domainId, value, onChange }: { domainId?: string; val
 
   if (!domainId) return <p className="hint">ابتدا پیمان را انتخاب کنید تا کاتالوگ عدم انطباق حوزه آن نمایش داده شود.</p>
 
-  const selectedRows = value.map((v) => ({ v, nc: catalog?.find((c) => c.id === v.ncId) })).filter((x) => x.nc) as { v: VisitItem; nc: NonConformance }[]
+  const selectedRows = value.map((v) => ({ v, nc: catalog?.find((c) => c.id === v.ncId) })).filter((x) => x.nc) as { v: NcItem; nc: NonConformance }[]
 
   return (
     <div className="stack">

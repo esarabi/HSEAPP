@@ -26,8 +26,8 @@ export function Dashboard() {
     [in30],
   )
   const persons = useLiveQuery(() => db.persons.toArray(), [])
-  const openVisits = useLiveQuery(() => db.visits.where('status').equals('open').toArray(), [])
-  const recentVisits = useLiveQuery(() => db.visits.orderBy('date').reverse().limit(5).toArray(), [])
+  const openVisits = useLiveQuery(() => db.inspections.where('status').equals('open').toArray(), [])
+  const recentVisits = useLiveQuery(() => db.inspections.orderBy('date').reverse().limit(5).toArray(), [])
   const contracts = useLiveQuery(() => db.contracts.toArray(), [])
   const contractName = (id: string) => contracts?.find((c) => c.id === id)?.name ?? '—'
   const personName = (id: string) => persons?.find((p) => p.id === id)?.name ?? '—'
@@ -46,8 +46,8 @@ export function Dashboard() {
       </div>
 
       <div className="stats">
-        <Link to="/visits?status=open" className={`stat ${openVisits?.length ? 'warn' : ''}`}>
-          <div className="label">بازدیدهای باز</div>
+        <Link to="/inspections?status=open" className={`stat ${openVisits?.length ? 'warn' : ''}`}>
+          <div className="label">بازرسی‌های باز</div>
           <div className="value">{openVisits?.length ?? 0}</div>
         </Link>
         <Link to="/findings" className={`stat ${overdueFindings ? 'danger' : ''}`}>
@@ -73,16 +73,16 @@ export function Dashboard() {
       <div className="grid-2">
         <section>
           <div className="section-title">
-            <h2>آخرین بازدیدها</h2>
-            <Link to="/visits" className="text-sm">همه</Link>
+            <h2>آخرین بازرسی‌ها</h2>
+            <Link to="/inspections" className="text-sm">همه</Link>
           </div>
           <div className="card">
-            {!recentVisits?.length && <p className="text-muted text-sm">بازدیدی ثبت نشده است. <Link to="/visits/new">ثبت بازدید</Link></p>}
+            {!recentVisits?.length && <p className="text-muted text-sm">بازرسی ثبت نشده است. <Link to="/inspections/new">ثبت بازرسی</Link></p>}
             {recentVisits?.map((v) => (
-              <Link key={v.id} to={`/visits/${v.id}`} className="list-item" style={{ color: 'inherit' }}>
+              <Link key={v.id} to={`/inspections/${v.id}`} className="list-item" style={{ color: 'inherit' }}>
                 <div className="body">
-                  <div className="title">{contractName(v.contractId)}</div>
-                  <div className="meta"><span>{toJalali(v.date)}</span>{v.locationText && <span>{v.locationText}</span>}<span>{v.items.length} عدم انطباق</span></div>
+                  <div className="title">{contractName(v.contractId)}{v.templateName ? ` · ${v.templateName}` : ''}</div>
+                  <div className="meta"><span>{toJalali(v.date)}</span>{v.locationText && <span>{v.locationText}</span>}<span>{v.ncItems.length} عدم انطباق</span></div>
                 </div>
                 <Badge tone={v.status === 'resolved' ? 'ok' : 'warn'}>{v.status === 'resolved' ? 'رفع شده' : 'باز'}</Badge>
               </Link>

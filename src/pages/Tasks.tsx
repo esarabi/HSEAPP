@@ -5,6 +5,7 @@ import type { Recurrence, Task, TaskCategory } from '../db/types'
 import { RECURRENCE_LABEL, TASK_CATEGORY_LABEL } from '../db/types'
 import { addDays, addMonths, relativeDays, toJalali, todayISO } from '../utils/date'
 import { Badge, Confirm, Empty, Field, Modal, PageHead, toast } from '../components/ui'
+import { DateInput } from '../components/DateInput'
 import { IconPlus, IconTrash } from '../components/Icons'
 
 function nextDue(date: string, r: Recurrence): string | null {
@@ -126,7 +127,7 @@ function TaskForm({ existing, onClose }: { existing?: Task; onClose: () => void 
               {(Object.keys(TASK_CATEGORY_LABEL) as TaskCategory[]).map((c) => <option key={c} value={c}>{TASK_CATEGORY_LABEL[c]}</option>)}
             </select>
           </Field>
-          <Field label="سررسید" required><input type="date" value={f.dueDate} onChange={(e) => set('dueDate', e.target.value)} /></Field>
+          <Field label="سررسید" required><DateInput value={f.dueDate} onChange={(d) => set('dueDate', d)} /></Field>
           <Field label="تکرار" hint="با انجام هر نوبت، نوبت بعدی خودکار ساخته می‌شود">
             <select value={f.recurrence} onChange={(e) => set('recurrence', e.target.value as Recurrence)}>
               {(Object.keys(RECURRENCE_LABEL) as Recurrence[]).map((r) => <option key={r} value={r}>{RECURRENCE_LABEL[r]}</option>)}

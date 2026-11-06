@@ -6,6 +6,7 @@ import { db, newId } from '../db/db'
 import type { Person, Training } from '../db/types'
 import { addMonths, daysUntil, relativeDays, toJalali, todayISO } from '../utils/date'
 import { Badge, Confirm, Empty, Field, Modal, PageHead, toast } from '../components/ui'
+import { DateInput } from '../components/DateInput'
 import { IconPlus, IconTrash } from '../components/Icons'
 import { downloadCSV } from '../utils/export'
 
@@ -200,10 +201,10 @@ function PersonForm({ existing, onClose, onSaved }: { existing?: Person; onClose
           <Field label="سمت"><input value={f.jobTitle} onChange={(e) => set('jobTitle', e.target.value)} /></Field>
           <Field label="تلفن"><input type="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} /></Field>
           <Field label="تاریخ معاینه دوره‌ای" hint="انقضا به‌طور پیش‌فرض یک سال بعد">
-            <input type="date" value={f.medicalExamDate} onChange={(e) => setExam(e.target.value)} />
+            <DateInput value={f.medicalExamDate ?? ''} onChange={setExam} />
           </Field>
           <Field label="انقضای معاینه">
-            <input type="date" value={f.medicalExamExpiry} onChange={(e) => set('medicalExamExpiry', e.target.value)} />
+            <DateInput value={f.medicalExamExpiry ?? ''} onChange={(d) => set('medicalExamExpiry', d)} />
           </Field>
         </div>
         {err && <p className="error">{err}</p>}
@@ -246,9 +247,9 @@ function TrainingForm({ personId, existing, onClose }: { personId: string; exist
           <datalist id="courses">{COMMON_COURSES.map((c) => <option key={c} value={c} />)}</datalist>
         </Field>
         <div className="grid-2">
-          <Field label="تاریخ برگزاری" required><input type="date" value={f.date} onChange={(e) => set('date', e.target.value)} /></Field>
+          <Field label="تاریخ برگزاری" required><DateInput value={f.date} onChange={(d) => set('date', d)} /></Field>
           <Field label="تاریخ انقضا">
-            <input type="date" value={f.expiryDate} onChange={(e) => set('expiryDate', e.target.value)} />
+            <DateInput value={f.expiryDate ?? ''} onChange={(d) => set('expiryDate', d)} />
           </Field>
           <Field label="مدت (ساعت)"><input type="number" min={0} value={f.hours ?? 0} onChange={(e) => set('hours', Number(e.target.value) || 0)} /></Field>
           <Field label="مدرس"><input value={f.instructor} onChange={(e) => set('instructor', e.target.value)} /></Field>

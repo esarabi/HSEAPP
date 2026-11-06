@@ -7,6 +7,7 @@ import type { Permit, PermitStatus, PermitType } from '../db/types'
 import { PERMIT_STATUS_LABEL, PERMIT_TYPE_LABEL } from '../db/types'
 import { nowLocalISO, toJalaliDateTime, todayISO } from '../utils/date'
 import { Badge, Confirm, Empty, Field, PageHead, statusTone, toast } from '../components/ui'
+import { DateTimeInput } from '../components/DateInput'
 import { IconPlus, IconTrash } from '../components/Icons'
 import { downloadCSV } from '../utils/export'
 
@@ -217,10 +218,10 @@ export function PermitNew() {
             <input value={f.issuer} onChange={(e) => set('issuer', e.target.value)} />
           </Field>
           <Field label="شروع" required>
-            <input type="datetime-local" value={f.startAt} onChange={(e) => set('startAt', e.target.value)} />
+            <DateTimeInput value={f.startAt} onChange={(v) => set('startAt', v)} />
           </Field>
           <Field label="پایان" required>
-            <input type="datetime-local" value={f.endAt} min={f.startAt} onChange={(e) => set('endAt', e.target.value)} />
+            <DateTimeInput value={f.endAt} min={f.startAt} onChange={(v) => set('endAt', v)} />
           </Field>
         </div>
         <Field label="شرح کار" required>

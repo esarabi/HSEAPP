@@ -8,6 +8,15 @@ import { todayISO } from '../utils/date'
 
 type Theme = 'auto' | 'light' | 'dark'
 
+export function getTheme(): Theme {
+  return (localStorage.getItem('hse.theme') as Theme | null) ?? 'light'
+}
+
+export function setThemePref(t: Theme) {
+  localStorage.setItem('hse.theme', t)
+  applyTheme(t)
+}
+
 export function applyTheme(t: Theme) {
   const root = document.documentElement
   if (t === 'auto') root.removeAttribute('data-theme')
@@ -16,7 +25,7 @@ export function applyTheme(t: Theme) {
 
 export function Settings() {
   const fileRef = useRef<HTMLInputElement>(null)
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('hse.theme') as Theme) ?? 'auto')
+  const [theme, setTheme] = useState<Theme>(getTheme)
   const [inspector, setInspector] = useState(() => localStorage.getItem('hse.inspector') ?? '')
   const [wipe, setWipe] = useState(false)
   const [pendingImport, setPendingImport] = useState<unknown>(null)
@@ -40,8 +49,7 @@ export function Settings() {
 
   function changeTheme(t: Theme) {
     setTheme(t)
-    localStorage.setItem('hse.theme', t)
-    applyTheme(t)
+    setThemePref(t)
   }
 
   async function doExport() {
@@ -84,7 +92,7 @@ export function Settings() {
   }
 
   const labels: Record<string, string> = {
-    inspections: 'بازرسی', findings: 'شرایط ناایمن', incidents: 'حادثه', permits: 'مجوز کار', persons: 'نفر', trainings: 'سابقه آموزشی', tasks: 'وظیفه', photos: 'عکس', domains: 'حوزه', contracts: 'پیمان', nonConformances: 'عدم انطباق', visits: 'بازدید',
+    inspections: 'بازرسی', findings: 'شرایط ناایمن', incidents: 'حادثه', permits: 'مجوز کار', persons: 'نفر', trainings: 'سابقه آموزشی', tasks: 'وظیفه', photos: 'عکس', domains: 'حوزه', contracts: 'پیمان', nonConformances: 'عدم انطباق',
   }
 
   return (
@@ -105,9 +113,9 @@ export function Settings() {
           </Field>
           <Field label="پوسته">
             <select value={theme} onChange={(e) => changeTheme(e.target.value as Theme)}>
-              <option value="auto">خودکار (سیستم)</option>
               <option value="light">روشن</option>
               <option value="dark">تیره</option>
+              <option value="auto">خودکار (مطابق سیستم)</option>
             </select>
           </Field>
         </div>

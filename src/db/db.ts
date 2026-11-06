@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { Contract, Domain, Finding, Incident, Inspection, NonConformance, Permit, Person, Photo, Task, Training, Visit } from './types'
+import type { Contract, Domain, Finding, Incident, Inspection, NonConformance, Permit, Person, Photo, Task, Training } from './types'
 
 export class HseDB extends Dexie {
   inspections!: EntityTable<Inspection, 'id'>
@@ -13,7 +13,6 @@ export class HseDB extends Dexie {
   domains!: EntityTable<Domain, 'id'>
   contracts!: EntityTable<Contract, 'id'>
   nonConformances!: EntityTable<NonConformance, 'id'>
-  visits!: EntityTable<Visit, 'id'>
 
   constructor() {
     super('hseapp')
@@ -33,6 +32,31 @@ export class HseDB extends Dexie {
       nonConformances: 'id, domainId, code, title, createdAt',
       visits: 'id, contractId, date, status, createdAt',
     })
+    // نسخه ۳: ادغام «بازدید» در «بازرسی»
+    this.version(3)
+      .stores({
+        inspections: 'id, date, contractId, status, templateId, createdAt',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('inspections')
+          .toCollection()
+          .modify((i: Record<string, unknown>) => {
+            i.contractId ??= ''
+            i.ncItems ??= []
+            i.beforePhotoIds ??= []
+            i.afterPhotoIds ??= []
+            i.status ??= 'open'
+            if (i.locationText === undefined && typeof i.location === 'string') i.locationText = i.location
+            delete i.location
+          })
+        const visits: Record<string, unknown>[] = await tx.table('visits').toArray()
+        for (const v of visits) {
+          const { items, ...rest } = v
+          await tx.table('inspections').put({ ...rest, items: [], ncItems: items ?? [] })
+        }
+      })
+    this.version(4).stores({ visits: null })
   }
 }
 
@@ -49,7 +73,6 @@ export const TABLE_NAMES = [
   'domains',
   'contracts',
   'nonConformances',
-  'visits',
 ] as const
 
 export type TableName = (typeof TABLE_NAMES)[number]

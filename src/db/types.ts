@@ -29,14 +29,41 @@ export interface ChecklistItem {
   note?: string
 }
 
+export type InspectionStatus = 'open' | 'resolved'
+export const INSPECTION_STATUS_LABEL: Record<InspectionStatus, string> = {
+  open: 'باز',
+  resolved: 'رفع شده',
+}
+
+/** یک مورد عدم انطباق انتخاب‌شده در بازرسی */
+export interface NcItem {
+  ncId: ID
+  note?: string
+}
+
+/** بازرسی (بازدید) از یک پیمان */
 export interface Inspection {
   id: ID
+  contractId: ID
   date: string
-  templateId: string
-  templateName: string
-  location: string
+  time?: string
   inspector: string
+  locationText?: string
+  lat?: number
+  lng?: number
+  accuracy?: number
+  /** چک‌لیست اختیاری */
+  templateId?: string
+  templateName?: string
   items: ChecklistItem[]
+  /** شناسه‌های عدم انطباق از کاتالوگ حوزه پیمان */
+  ncItems: NcItem[]
+  description?: string
+  beforePhotoIds: ID[]
+  afterPhotoIds: ID[]
+  status: InspectionStatus
+  followUpDate?: string
+  resolvedDate?: string
   notes?: string
   createdAt: number
 }
@@ -262,33 +289,3 @@ export function criticalityTone(score?: number): 'ok' | 'warn' | 'danger' | 'inf
   return 'ok'
 }
 
-export type VisitStatus = 'open' | 'resolved'
-export const VISIT_STATUS_LABEL: Record<VisitStatus, string> = {
-  open: 'باز',
-  resolved: 'رفع شده',
-}
-
-export interface VisitItem {
-  ncId: ID
-  note?: string
-}
-
-export interface Visit {
-  id: ID
-  contractId: ID
-  date: string
-  time?: string
-  inspector: string
-  locationText?: string
-  lat?: number
-  lng?: number
-  accuracy?: number
-  items: VisitItem[]
-  description?: string
-  beforePhotoIds: ID[]
-  afterPhotoIds: ID[]
-  status: VisitStatus
-  followUpDate?: string
-  resolvedDate?: string
-  createdAt: number
-}

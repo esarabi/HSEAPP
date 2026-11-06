@@ -53,6 +53,15 @@ export async function importBackup(data: unknown, mode: 'merge' | 'replace'): Pr
         count += rows.length
       }
     }
+    // پشتیبان‌های قدیمی: «بازدید»ها به بازرسی تبدیل می‌شوند
+    const legacy = (b.tables as Record<string, unknown[]> | undefined)?.visits
+    if (Array.isArray(legacy) && legacy.length) {
+      for (const v of legacy as Record<string, unknown>[]) {
+        const { items, ...rest } = v
+        await db.inspections.put({ ...rest, items: [], ncItems: items ?? [] } as never)
+      }
+      count += legacy.length
+    }
   })
   // عکس‌ها خارج از تراکنش، چون تبدیل dataURL ناهمگام است
   for (const p of b.photos ?? []) {

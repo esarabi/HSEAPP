@@ -6,6 +6,7 @@ import type { Incident, IncidentType, Severity } from '../db/types'
 import { ACTION_STATUS_LABEL, INCIDENT_TYPE_LABEL, SEVERITY_LABEL } from '../db/types'
 import { toJalali, toJalaliLong, todayISO } from '../utils/date'
 import { Badge, Confirm, Empty, Field, PageHead, Photo, severityTone, statusTone, toast } from '../components/ui'
+import { DateInput } from '../components/DateInput'
 import { IconPlus, IconTrash } from '../components/Icons'
 import { PhotoInput } from '../components/PhotoInput'
 import { downloadCSV } from '../utils/export'
@@ -182,7 +183,7 @@ function IncidentEditor({ existing, onDone }: { existing?: Incident; onDone: (id
             </select>
           </Field>
           <Field label="تاریخ" required>
-            <input type="date" value={f.date} onChange={(e) => set('date', e.target.value)} />
+            <DateInput value={f.date} onChange={(d) => set('date', d)} />
           </Field>
           <Field label="ساعت">
             <input type="time" value={f.time} onChange={(e) => set('time', e.target.value)} />
@@ -208,7 +209,7 @@ function IncidentEditor({ existing, onDone }: { existing?: Incident; onDone: (id
             <input value={f.responsible} onChange={(e) => set('responsible', e.target.value)} />
           </Field>
           <Field label="مهلت اقدام">
-            <input type="date" value={f.dueDate} onChange={(e) => set('dueDate', e.target.value)} />
+            <DateInput value={f.dueDate ?? ''} onChange={(d) => set('dueDate', d)} />
           </Field>
           <Field label="روزهای ازدست‌رفته">
             <input type="number" min={0} value={f.lostDays ?? 0} onChange={(e) => set('lostDays', Number(e.target.value) || 0)} />
