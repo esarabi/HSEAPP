@@ -1,10 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { IconAlert, IconClipboard, IconHome, IconPermit, IconSettings, IconTasks, IconUsers } from './Icons'
+import { IconAlert, IconClipboard, IconContract, IconHome, IconList, IconMore, IconPermit, IconReport, IconSettings, IconTasks, IconUsers, IconVisit } from './Icons'
 import { ToastHost } from './ui'
 import { UpdatePrompt } from './UpdatePrompt'
 
-const links = [
+export const LINKS = [
   { to: '/', label: 'خانه', icon: IconHome, end: true },
+  { to: '/visits', label: 'بازدید', icon: IconVisit },
+  { to: '/contracts', label: 'پیمان‌ها', icon: IconContract },
+  { to: '/catalog', label: 'عدم انطباق‌ها', icon: IconList },
+  { to: '/reports', label: 'گزارش', icon: IconReport },
   { to: '/inspections', label: 'بازرسی', icon: IconClipboard },
   { to: '/incidents', label: 'حوادث', icon: IconAlert },
   { to: '/permits', label: 'مجوز کار', icon: IconPermit },
@@ -13,7 +17,9 @@ const links = [
   { to: '/settings', label: 'تنظیمات', icon: IconSettings },
 ]
 
-const mobileLinks = links.filter((l) => l.to !== '/people')
+const MOBILE_MAIN = ['/', '/visits', '/inspections', '/tasks']
+export const MORE_LINKS = LINKS.filter((l) => !MOBILE_MAIN.includes(l.to))
+const mobileLinks = [...LINKS.filter((l) => MOBILE_MAIN.includes(l.to)), { to: '/more', label: 'بیشتر', icon: IconMore, end: false }]
 
 export function Layout() {
   return (
@@ -26,7 +32,7 @@ export function Layout() {
             <small>مدیریت کارهای کارشناس ایمنی</small>
           </div>
         </div>
-        {links.map((l) => (
+        {LINKS.map((l) => (
           <NavLink key={l.to} to={l.to} end={l.end} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <l.icon /> {l.label}
           </NavLink>

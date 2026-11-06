@@ -84,7 +84,7 @@ export function Settings() {
   }
 
   const labels: Record<string, string> = {
-    inspections: 'بازرسی', findings: 'شرایط ناایمن', incidents: 'حادثه', permits: 'مجوز کار', persons: 'نفر', trainings: 'سابقه آموزشی', tasks: 'وظیفه', photos: 'عکس',
+    inspections: 'بازرسی', findings: 'شرایط ناایمن', incidents: 'حادثه', permits: 'مجوز کار', persons: 'نفر', trainings: 'سابقه آموزشی', tasks: 'وظیفه', photos: 'عکس', domains: 'حوزه', contracts: 'پیمان', nonConformances: 'عدم انطباق', visits: 'بازدید',
   }
 
   return (

@@ -48,3 +48,18 @@ export const IconUpload = (p: P) => (
 export const IconInbox = (p: P) => (
   <svg {...base} {...p}><path d="M3 13l2.5-8h13L21 13v6H3z" /><path d="M3 13h5l2 3h4l2-3h5" /></svg>
 )
+export const IconVisit = (p: P) => (
+  <svg {...base} {...p}><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z" /><path d="M9.5 10l1.8 1.8L14.5 8.5" /></svg>
+)
+export const IconContract = (p: P) => (
+  <svg {...base} {...p}><path d="M6 3h9l4 4v14H6z" /><path d="M15 3v4h4M9 12h6M9 16h6" /></svg>
+)
+export const IconList = (p: P) => (
+  <svg {...base} {...p}><path d="M8 6h13M8 12h13M8 18h13" /><circle cx="4" cy="6" r="1" /><circle cx="4" cy="12" r="1" /><circle cx="4" cy="18" r="1" /></svg>
+)
+export const IconReport = (p: P) => (
+  <svg {...base} {...p}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+)
+export const IconMore = (p: P) => (
+  <svg {...base} {...p}><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></svg>
+)

@@ -8,6 +8,11 @@ import { PeopleList, PersonDetail } from './pages/People'
 import { PermitDetail, PermitList, PermitNew } from './pages/Permits'
 import { Settings } from './pages/Settings'
 import { TaskList } from './pages/Tasks'
+import { VisitDetail, VisitForm, VisitList } from './pages/Visits'
+import { ContractList } from './pages/Contracts'
+import { CatalogPage } from './pages/Catalog'
+import { Reports } from './pages/Reports'
+import { More } from './pages/More'
 
 export default function App() {
   return (
@@ -15,6 +20,14 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/visits" element={<VisitList />} />
+          <Route path="/visits/new" element={<VisitForm />} />
+          <Route path="/visits/:id" element={<VisitDetail />} />
+          <Route path="/visits/:id/edit" element={<VisitForm />} />
+          <Route path="/contracts" element={<ContractList />} />
+          <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/more" element={<More />} />
           <Route path="/inspections" element={<InspectionList />} />
           <Route path="/inspections/new" element={<InspectionNew />} />
           <Route path="/inspections/:id" element={<InspectionDetail />} />

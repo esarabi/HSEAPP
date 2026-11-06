@@ -136,7 +136,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .grid-2 { display: grid; grid-template-columns: 1fr; gap: 10px; }
 @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-@media (min-width: 640px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 640px) { .stats { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
 .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); }
 .stat .label { color: var(--text-muted); font-size: 0.8rem; }
 .stat .value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; margin-top: 4px; }
@@ -268,3 +268,41 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .text-sm { font-size: 0.85rem; }
 .mt { margin-top: 12px; }
 .pre { white-space: pre-wrap; }
+
+/* ---------- عکس‌های چندتایی ---------- */
+.photo-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.photo-cell { position: relative; }
+.photo-cell .photo-thumb { width: 88px; height: 88px; }
+.photo-remove {
+  position: absolute; top: -6px; inset-inline-start: -6px; width: 22px; height: 22px; border-radius: 50%;
+  border: none; background: var(--danger); color: #fff; font-size: 12px; cursor: pointer; line-height: 1;
+}
+.photo-grid.print .photo-thumb { width: 160px; height: 160px; }
+
+/* ---------- کاتالوگ عدم انطباق ---------- */
+.code { font-family: ui-monospace, monospace; font-size: 0.8em; background: var(--surface-2); padding: 0 6px; border-radius: 6px; direction: ltr; display: inline-block; }
+.nc-list { max-height: 60dvh; overflow: auto; }
+.nc-row { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.nc-row:last-child { border-bottom: none; }
+.nc-row.on { background: var(--primary-soft); margin: 0 -16px; padding: 8px 16px; }
+.nc-row .check { cursor: pointer; }
+.nc-row .check .body { display: block; flex: 1; }
+.nc-row .check .title { display: block; }
+.nc-row .check .meta { display: flex; }
+.geo-box { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 10px; }
+.stat-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.bar { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.bar .track { flex: 1; height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 999px; }
+.more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.more-grid .nav-link { background: var(--surface); border: 1px solid var(--border); padding: 16px 12px; flex-direction: column; text-align: center; }
+.more-grid .nav-link svg { width: 28px; height: 28px; }
+
+/* ---------- چاپ ---------- */
+@media print {
+  .sidebar, .bottom-nav, .fab, .no-print, .update-bar, .toast { display: none !important; }
+  .main { padding: 0; max-width: none; }
+  body { background: #fff; color: #000; font-size: 12px; }
+  .card { box-shadow: none; break-inside: avoid; }
+  a { color: inherit; }
+}

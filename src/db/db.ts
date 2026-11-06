@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { Finding, Incident, Inspection, Permit, Person, Photo, Task, Training } from './types'
+import type { Contract, Domain, Finding, Incident, Inspection, NonConformance, Permit, Person, Photo, Task, Training, Visit } from './types'
 
 export class HseDB extends Dexie {
   inspections!: EntityTable<Inspection, 'id'>
@@ -10,6 +10,10 @@ export class HseDB extends Dexie {
   trainings!: EntityTable<Training, 'id'>
   tasks!: EntityTable<Task, 'id'>
   photos!: EntityTable<Photo, 'id'>
+  domains!: EntityTable<Domain, 'id'>
+  contracts!: EntityTable<Contract, 'id'>
+  nonConformances!: EntityTable<NonConformance, 'id'>
+  visits!: EntityTable<Visit, 'id'>
 
   constructor() {
     super('hseapp')
@@ -22,6 +26,12 @@ export class HseDB extends Dexie {
       trainings: 'id, personId, date, expiryDate, createdAt',
       tasks: 'id, dueDate, done, category, createdAt',
       photos: 'id, createdAt',
+    })
+    this.version(2).stores({
+      domains: 'id, name, createdAt',
+      contracts: 'id, name, domainId, active, createdAt',
+      nonConformances: 'id, domainId, code, title, createdAt',
+      visits: 'id, contractId, date, status, createdAt',
     })
   }
 }
@@ -36,6 +46,10 @@ export const TABLE_NAMES = [
   'persons',
   'trainings',
   'tasks',
+  'domains',
+  'contracts',
+  'nonConformances',
+  'visits',
 ] as const
 
 export type TableName = (typeof TABLE_NAMES)[number]

@@ -26,6 +26,10 @@ export function Dashboard() {
     [in30],
   )
   const persons = useLiveQuery(() => db.persons.toArray(), [])
+  const openVisits = useLiveQuery(() => db.visits.where('status').equals('open').toArray(), [])
+  const recentVisits = useLiveQuery(() => db.visits.orderBy('date').reverse().limit(5).toArray(), [])
+  const contracts = useLiveQuery(() => db.contracts.toArray(), [])
+  const contractName = (id: string) => contracts?.find((c) => c.id === id)?.name ?? '—'
   const personName = (id: string) => persons?.find((p) => p.id === id)?.name ?? '—'
 
   const overdueFindings = openFindings?.filter((f) => f.dueDate && f.dueDate < today).length ?? 0
@@ -42,6 +46,10 @@ export function Dashboard() {
       </div>
 
       <div className="stats">
+        <Link to="/visits?status=open" className={`stat ${openVisits?.length ? 'warn' : ''}`}>
+          <div className="label">بازدیدهای باز</div>
+          <div className="value">{openVisits?.length ?? 0}</div>
+        </Link>
         <Link to="/findings" className={`stat ${overdueFindings ? 'danger' : ''}`}>
           <div className="label">شرایط ناایمن باز</div>
           <div className="value">{openFindings?.length ?? 0}</div>
@@ -63,6 +71,25 @@ export function Dashboard() {
       </div>
 
       <div className="grid-2">
+        <section>
+          <div className="section-title">
+            <h2>آخرین بازدیدها</h2>
+            <Link to="/visits" className="text-sm">همه</Link>
+          </div>
+          <div className="card">
+            {!recentVisits?.length && <p className="text-muted text-sm">بازدیدی ثبت نشده است. <Link to="/visits/new">ثبت بازدید</Link></p>}
+            {recentVisits?.map((v) => (
+              <Link key={v.id} to={`/visits/${v.id}`} className="list-item" style={{ color: 'inherit' }}>
+                <div className="body">
+                  <div className="title">{contractName(v.contractId)}</div>
+                  <div className="meta"><span>{toJalali(v.date)}</span>{v.locationText && <span>{v.locationText}</span>}<span>{v.items.length} عدم انطباق</span></div>
+                </div>
+                <Badge tone={v.status === 'resolved' ? 'ok' : 'warn'}>{v.status === 'resolved' ? 'رفع شده' : 'باز'}</Badge>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <section>
           <div className="section-title">
             <h2>وظایف پیش رو</h2>

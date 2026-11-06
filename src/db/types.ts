@@ -207,3 +207,88 @@ export interface Photo {
   type: string
   createdAt: number
 }
+
+// ---------- حوزه، پیمان و عدم انطباق ----------
+export interface Domain {
+  id: ID
+  name: string
+  createdAt: number
+}
+
+export interface Contract {
+  id: ID
+  name: string
+  domainId: ID
+  contractor?: string
+  employer?: string
+  area?: string
+  startDate?: string
+  endDate?: string
+  notes?: string
+  active: boolean
+  createdAt: number
+}
+
+/** یک مورد عدم انطباق در کاتالوگ یک حوزه */
+export interface NonConformance {
+  id: ID
+  domainId: ID
+  code: string // شناسه
+  title: string // عنوان (سؤال)
+  questionType?: string // نوع سؤال: عمومی / تخصصی
+  process?: string // فرآیند / محل
+  ncDescription?: string // شرح عدم انطباق
+  legalBasis?: string // الزام قانونی
+  correctiveAction?: string // اقدام کنترلی اصلاحی
+  score?: number // امتیاز / ضریب بحرانیت (۱ تا ۵)
+  criticality?: string // درجه بحرانیت
+  deadline?: string // مهلت رفع عدم انطباق
+  custom: boolean // توسط کارشناس در لحظه اضافه شده
+  createdAt: number
+}
+
+export const CRITICALITY_LEVELS: { score: number; label: string; deadline: string }[] = [
+  { score: 1, label: 'اهمیت بسیار کم', deadline: '15 روز کاری بعد از ابلاغ' },
+  { score: 2, label: 'اهمیت کم', deadline: '10 روز کاری بعد از ابلاغ' },
+  { score: 3, label: 'اهمیت متوسط', deadline: '5 روز کاری بعد از ابلاغ' },
+  { score: 4, label: 'اهمیت زیاد', deadline: '2 روز کاری پس از ابلاغ' },
+  { score: 5, label: 'اهمیت بسیار زیاد', deadline: 'آنی پس از اعلام' },
+]
+
+export function criticalityTone(score?: number): 'ok' | 'warn' | 'danger' | 'info' {
+  if (!score) return 'info'
+  if (score >= 5) return 'danger'
+  if (score >= 3) return 'warn'
+  return 'ok'
+}
+
+export type VisitStatus = 'open' | 'resolved'
+export const VISIT_STATUS_LABEL: Record<VisitStatus, string> = {
+  open: 'باز',
+  resolved: 'رفع شده',
+}
+
+export interface VisitItem {
+  ncId: ID
+  note?: string
+}
+
+export interface Visit {
+  id: ID
+  contractId: ID
+  date: string
+  time?: string
+  inspector: string
+  locationText?: string
+  lat?: number
+  lng?: number
+  accuracy?: number
+  items: VisitItem[]
+  description?: string
+  beforePhotoIds: ID[]
+  afterPhotoIds: ID[]
+  status: VisitStatus
+  followUpDate?: string
+  resolvedDate?: string
+  createdAt: number
+}
